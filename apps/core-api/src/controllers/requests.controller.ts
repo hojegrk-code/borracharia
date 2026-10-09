@@ -13,26 +13,31 @@ export async function resolveCustomerId(req: FastifyRequest): Promise<string> {
   const userIdHeader = (req.headers['x-user-id'] as string) || undefined;
 
   if (customerIdHeader) return customerIdHeader;
-  if (!userIdHeader) {
-    throw new BadRequestError(
-      'Identificação do cliente ausente (envie o header x-user-id ou x-customer-id)',
-    );
+  if (userIdHeader) {
+    const profile = await prisma.customerProfile.findFirst({
+      where: {
+        OR: [{ id: userIdHeader }, { user_id: userIdHeader }],
+      },
+    });
+
+    if (!profile) {
+      throw new NotFoundError(
+        `Perfil de cliente não encontrado para o identificador [${userIdHeader}]`,
+      );
+    }
+
+    return profile.id;
   }
 
-  // Tenta encontrar perfil por profileId ou por userId
-  const profile = await prisma.customerProfile.findFirst({
-    where: {
-      OR: [{ id: userIdHeader }, { user_id: userIdHeader }],
-    },
-  });
-
-  if (!profile) {
-    throw new NotFoundError(
-      `Perfil de cliente não encontrado para o identificador [${userIdHeader}]`,
-    );
+  // Fallback para conveniência de desenvolvimento e teste frontend
+  const defaultProfile = await prisma.customerProfile.findFirst();
+  if (defaultProfile) {
+    return defaultProfile.id;
   }
 
-  return profile.id;
+  throw new BadRequestError(
+    'Identificação do cliente ausente (envie o header x-user-id ou x-customer-id)',
+  );
 }
 
 export class RequestsController {
