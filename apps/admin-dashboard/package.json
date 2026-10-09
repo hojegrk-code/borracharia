@@ -1,0 +1,21 @@
+{
+  "name": "@borracharia/admin-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "tsc",
+    "check-types": "tsc --noEmit",
+    "lint": "eslint src/",
+    "dev": "node dist/index.js"
+  },
+  "dependencies": {
+    "@borracharia/database": "workspace:*"
+  },
+  "devDependencies": {
+    "@borracharia/eslint-config": "workspace:*",
+    "@borracharia/typescript-config": "workspace:*",
+    "@types/node": "^22.13.9",
+    "typescript": "^5.8.2"
+  }
+}

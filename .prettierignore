@@ -1,0 +1,8 @@
+node_modules
+dist
+.turbo
+.next
+postgres_data
+postgres_local
+*.log
+pnpm-lock.yaml

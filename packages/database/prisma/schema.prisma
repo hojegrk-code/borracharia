@@ -1,0 +1,91 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis(map: "postgis"), pgcrypto(map: "pgcrypto")]
+}
+
+enum Role {
+  CUSTOMER
+  PROVIDER
+  ADMIN
+
+  @@map("user_role")
+}
+
+enum ProviderStatus {
+  PENDING_REVIEW
+  APPROVED
+  REJECTED
+
+  @@map("provider_status")
+}
+
+model User {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  email      String   @unique
+  phone      String   @unique
+  role       Role     @default(CUSTOMER)
+  created_at DateTime @default(now()) @map("created_at")
+  updated_at DateTime @updatedAt @map("updated_at")
+
+  customer_profile CustomerProfile?
+  provider_profile ProviderProfile?
+
+  @@map("users")
+}
+
+model CustomerProfile {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id    String   @unique @map("user_id") @db.Uuid
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  created_at DateTime @default(now()) @map("created_at")
+  updated_at DateTime @updatedAt @map("updated_at")
+
+  @@map("customer_profiles")
+}
+
+model ProviderProfile {
+  id                   String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id              String         @unique @map("user_id") @db.Uuid
+  user                 User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  cnh_url              String?        @map("cnh_url")
+  tools_photo_url      String?        @map("tools_photo_url")
+  validation_video_url String?        @map("validation_video_url")
+  status               ProviderStatus @default(PENDING_REVIEW)
+  asaas_wallet_id      String?        @map("asaas_wallet_id")
+  created_at           DateTime       @default(now()) @map("created_at")
+  updated_at           DateTime       @updatedAt @map("updated_at")
+
+  vehicle_types ProviderVehicleType[]
+
+  @@map("provider_profiles")
+}
+
+model VehicleType {
+  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String   @unique
+  created_at DateTime @default(now()) @map("created_at")
+  updated_at DateTime @updatedAt @map("updated_at")
+
+  providers ProviderVehicleType[]
+
+  @@map("vehicle_types")
+}
+
+model ProviderVehicleType {
+  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  provider_id     String          @map("provider_id") @db.Uuid
+  vehicle_type_id String          @map("vehicle_type_id") @db.Uuid
+  created_at      DateTime        @default(now()) @map("created_at")
+
+  provider     ProviderProfile @relation(fields: [provider_id], references: [id], onDelete: Cascade)
+  vehicle_type VehicleType     @relation(fields: [vehicle_type_id], references: [id], onDelete: Cascade)
+
+  @@unique([provider_id, vehicle_type_id])
+  @@map("provider_vehicle_types")
+}
