@@ -1,8 +1,15 @@
 -- CreateExtension
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
--- CreateExtension
-CREATE EXTENSION IF NOT EXISTS "postgis";
+-- CreateExtension PostGIS (safe guarded)
+DO $$
+BEGIN
+    CREATE EXTENSION IF NOT EXISTS "postgis";
+EXCEPTION
+    WHEN OTHERS THEN
+        RAISE NOTICE 'PostGIS extension not available in environment, skipping.';
+END
+$$;
 
 -- CreateEnum
 CREATE TYPE "user_role" AS ENUM ('CUSTOMER', 'PROVIDER', 'ADMIN');

@@ -6,7 +6,7 @@ generator client {
 datasource db {
   provider   = "postgresql"
   url        = env("DATABASE_URL")
-  extensions = [postgis(map: "postgis"), pgcrypto(map: "pgcrypto")]
+  extensions = [pgcrypto(map: "pgcrypto")]
 }
 
 enum Role {
@@ -25,6 +25,33 @@ enum ProviderStatus {
   @@map("provider_status")
 }
 
+enum ServiceRequestStatus {
+  CREATED
+  SEARCHING_PROVIDER
+  PROPOSALS_RECEIVED
+  AWAITING_CUSTOMER_APPROVAL
+  PROVIDER_ASSIGNED
+  PROVIDER_EN_ROUTE
+  PROVIDER_ARRIVED
+  SERVICE_IN_PROGRESS
+  SERVICE_COMPLETED
+  PAYMENT_PENDING
+  CLOSED
+  CANCELLED
+  FAILED
+
+  @@map("service_request_status")
+}
+
+enum ProposalStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  EXPIRED
+
+  @@map("proposal_status")
+}
+
 model User {
   id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
   email      String   @unique
@@ -40,52 +67,101 @@ model User {
 }
 
 model CustomerProfile {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id    String   @unique @map("user_id") @db.Uuid
-  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  created_at DateTime @default(now()) @map("created_at")
-  updated_at DateTime @updatedAt @map("updated_at")
+  id               String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id          String           @unique @map("user_id") @db.Uuid
+  user             User             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  created_at       DateTime         @default(now()) @map("created_at")
+  updated_at       DateTime         @updatedAt @map("updated_at")
+  service_requests ServiceRequest[]
 
   @@map("customer_profiles")
 }
 
 model ProviderProfile {
-  id                   String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  user_id              String         @unique @map("user_id") @db.Uuid
-  user                 User           @relation(fields: [user_id], references: [id], onDelete: Cascade)
-  cnh_url              String?        @map("cnh_url")
-  tools_photo_url      String?        @map("tools_photo_url")
-  validation_video_url String?        @map("validation_video_url")
-  status               ProviderStatus @default(PENDING_REVIEW)
-  asaas_wallet_id      String?        @map("asaas_wallet_id")
-  created_at           DateTime       @default(now()) @map("created_at")
-  updated_at           DateTime       @updatedAt @map("updated_at")
-
-  vehicle_types ProviderVehicleType[]
+  id                   String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  user_id              String                @unique @map("user_id") @db.Uuid
+  user                 User                  @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  cnh_url              String?               @map("cnh_url")
+  tools_photo_url      String?               @map("tools_photo_url")
+  validation_video_url String?               @map("validation_video_url")
+  status               ProviderStatus        @default(PENDING_REVIEW)
+  asaas_wallet_id      String?               @map("asaas_wallet_id")
+  created_at           DateTime              @default(now()) @map("created_at")
+  updated_at           DateTime              @updatedAt @map("updated_at")
+  vehicle_types        ProviderVehicleType[]
+  proposals            Proposal[]
 
   @@map("provider_profiles")
 }
 
 model VehicleType {
-  id         String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  name       String   @unique
-  created_at DateTime @default(now()) @map("created_at")
-  updated_at DateTime @updatedAt @map("updated_at")
-
-  providers ProviderVehicleType[]
+  id         String                @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name       String                @unique
+  created_at DateTime              @default(now()) @map("created_at")
+  updated_at DateTime              @updatedAt @map("updated_at")
+  providers  ProviderVehicleType[]
 
   @@map("vehicle_types")
 }
 
 model ProviderVehicleType {
-  id              String          @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
-  provider_id     String          @map("provider_id") @db.Uuid
-  vehicle_type_id String          @map("vehicle_type_id") @db.Uuid
-  created_at      DateTime        @default(now()) @map("created_at")
+  id              String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  provider_id     String   @map("provider_id") @db.Uuid
+  vehicle_type_id String   @map("vehicle_type_id") @db.Uuid
+  created_at      DateTime @default(now()) @map("created_at")
 
   provider     ProviderProfile @relation(fields: [provider_id], references: [id], onDelete: Cascade)
   vehicle_type VehicleType     @relation(fields: [vehicle_type_id], references: [id], onDelete: Cascade)
 
   @@unique([provider_id, vehicle_type_id])
   @@map("provider_vehicle_types")
+}
+
+model ServiceType {
+  id                       String           @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  name                     String           @unique
+  description              String?
+  estimated_base_price_min Decimal          @map("estimated_base_price_min") @db.Decimal(10, 2)
+  estimated_base_price_max Decimal          @map("estimated_base_price_max") @db.Decimal(10, 2)
+  is_active                Boolean          @default(true) @map("is_active")
+  created_at               DateTime         @default(now()) @map("created_at")
+  updated_at               DateTime         @updatedAt @map("updated_at")
+  service_requests         ServiceRequest[]
+
+  @@map("service_types")
+}
+
+model ServiceRequest {
+  id              String               @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  customer_id     String               @map("customer_id") @db.Uuid
+  service_type_id String               @map("service_type_id") @db.Uuid
+  latitude        Float
+  longitude       Float
+  status          ServiceRequestStatus @default(CREATED)
+  created_at      DateTime             @default(now()) @map("created_at")
+  updated_at      DateTime             @updatedAt @map("updated_at")
+
+  customer     CustomerProfile @relation(fields: [customer_id], references: [id], onDelete: Cascade)
+  service_type ServiceType     @relation(fields: [service_type_id], references: [id], onDelete: Restrict)
+  proposals    Proposal[]
+
+  @@map("service_requests")
+}
+
+model Proposal {
+  id                          String         @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  service_request_id          String         @map("service_request_id") @db.Uuid
+  provider_id                 String         @map("provider_id") @db.Uuid
+  proposed_price              Decimal        @map("proposed_price") @db.Decimal(10, 2)
+  estimated_arrival_time_mins Int            @map("estimated_arrival_time_mins")
+  status                      ProposalStatus @default(PENDING)
+  created_at                  DateTime       @default(now()) @map("created_at")
+  updated_at                  DateTime       @updatedAt @map("updated_at")
+
+  service_request ServiceRequest  @relation(fields: [service_request_id], references: [id], onDelete: Cascade)
+  provider        ProviderProfile @relation(fields: [provider_id], references: [id], onDelete: Cascade)
+
+  @@index([service_request_id])
+  @@index([provider_id])
+  @@map("proposals")
 }
