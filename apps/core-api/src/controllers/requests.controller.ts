@@ -7,6 +7,7 @@ import {
   requestIdParamSchema,
 } from '../schemas/requests.schemas.js';
 import { requestsService } from '../services/requests.service.js';
+import { socketService } from '../services/socket.service.js';
 
 export async function resolveCustomerId(req: FastifyRequest): Promise<string> {
   const customerIdHeader = (req.headers['x-customer-id'] as string) || undefined;
@@ -49,6 +50,9 @@ export class RequestsController {
     const body = createServiceRequestSchema.parse(request.body);
 
     const serviceRequest = await requestsService.createRequest(customerId, body);
+
+    // Notifica borracheiros conectados via WebSocket
+    socketService.emitNewRequest(serviceRequest);
 
     return reply.status(201).send({
       success: true,

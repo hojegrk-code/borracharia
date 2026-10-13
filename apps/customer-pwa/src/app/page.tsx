@@ -8,11 +8,18 @@ import {
   Clock,
   Compass,
   MapPin,
+  Radio,
   RefreshCw,
   ShieldAlert,
   Wrench,
 } from 'lucide-react';
 import { api, ServiceRequestResponse, ServiceType } from '../lib/api';
+import {
+  getCustomerSocket,
+  joinCustomerRequestRoom,
+  onNewProposal,
+  onProposalAccepted,
+} from '../lib/socket';
 
 // Coordenadas mockadas: Centro de Balneário Camboriú, SC
 const MOCK_LOCATION = {
@@ -28,6 +35,45 @@ export default function CustomerHomePage() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [activeRequest, setActiveRequest] = useState<ServiceRequestResponse | null>(null);
+  const [realtimeProposals, setRealtimeProposals] = useState<any[]>([]);
+  const [socketConnected, setSocketConnected] = useState<boolean>(false);
+
+  // Monitora conexão com o servidor WebSocket
+  useEffect(() => {
+    const socket = getCustomerSocket();
+    const handleConnect = () => setSocketConnected(true);
+    const handleDisconnect = () => setSocketConnected(false);
+
+    if (socket.connected) setSocketConnected(true);
+    socket.on('connect', handleConnect);
+    socket.on('disconnect', handleDisconnect);
+
+    return () => {
+      socket.off('connect', handleConnect);
+      socket.off('disconnect', handleDisconnect);
+    };
+  }, []);
+
+  // Inscreve na sala do chamado quando um chamado é criado e escuta lances
+  useEffect(() => {
+    if (!activeRequest) return;
+
+    joinCustomerRequestRoom(activeRequest.id);
+
+    const cleanupProposal = onNewProposal((proposal) => {
+      console.log('[Customer PWA] Nova proposta recebida em tempo real via Socket.io:', proposal);
+      setRealtimeProposals((prev) => [proposal, ...prev]);
+    });
+
+    const cleanupAccepted = onProposalAccepted((data) => {
+      console.log('[Customer PWA] Proposta aceita confirmada via Socket.io:', data);
+    });
+
+    return () => {
+      cleanupProposal();
+      cleanupAccepted();
+    };
+  }, [activeRequest]);
 
   // Carrega os tipos de serviço disponíveis da core-api
   useEffect(() => {
@@ -88,9 +134,19 @@ export default function CustomerHomePage() {
             <p className="text-xs text-slate-500 font-medium">Socorro 24h para Pneus</p>
           </div>
         </div>
-        <div className="flex items-center space-x-1.5 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
-          <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Rede Ativa</span>
+        <div
+          className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-full border text-xs font-semibold ${
+            socketConnected
+              ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+              : 'bg-amber-50 border-amber-200 text-amber-700'
+          }`}
+        >
+          <span
+            className={`w-2 h-2 rounded-full ${
+              socketConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
+            }`}
+          ></span>
+          <span>{socketConnected ? '⚡ Tempo Real Ativo' : 'Conectando...'}</span>
         </div>
       </header>
 
@@ -175,8 +231,52 @@ export default function CustomerHomePage() {
               </p>
             </div>
 
+            {/* Seção de Lances em Tempo Real via WebSocket */}
+            <div className="pt-2 border-t border-slate-200 space-y-2">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-800 uppercase tracking-wider flex items-center gap-1.5">
+                  <Radio className="w-3.5 h-3.5 text-orange-600 animate-pulse" />
+                  Lances em Tempo Real ({realtimeProposals.length})
+                </span>
+                <span className="text-[10px] text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full border border-emerald-200">
+                  {socketConnected ? 'Radar Ativo' : 'Conectando'}
+                </span>
+              </div>
+
+              {realtimeProposals.length === 0 ? (
+                <div className="bg-slate-50 border border-dashed border-slate-300 rounded-xl p-3 text-center text-xs text-slate-500">
+                  <p className="animate-pulse">📡 Aguardando socorristas enviarem lances...</p>
+                </div>
+              ) : (
+                <div className="space-y-2 max-h-48 overflow-y-auto">
+                  {realtimeProposals.map((prop, idx) => (
+                    <div
+                      key={prop.id || idx}
+                      className="p-3 bg-emerald-50/80 border border-emerald-300 rounded-xl flex items-center justify-between text-xs animate-in fade-in"
+                    >
+                      <div>
+                        <p className="font-extrabold text-slate-900 text-sm">
+                          R$ {Number(prop.proposed_price).toFixed(2)}
+                        </p>
+                        <p className="text-[11px] text-slate-600 flex items-center gap-1">
+                          <Clock className="w-3 h-3 text-emerald-600" />
+                          Chegada estimada: {prop.estimated_arrival_time_mins} min
+                        </p>
+                      </div>
+                      <span className="px-2.5 py-1 bg-emerald-600 text-white font-bold rounded-lg text-[10px] shadow-sm">
+                        Novo Lance!
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+
             <button
-              onClick={() => setActiveRequest(null)}
+              onClick={() => {
+                setActiveRequest(null);
+                setRealtimeProposals([]);
+              }}
               className="w-full py-2.5 px-4 rounded-xl border border-slate-300 text-slate-700 text-xs font-semibold hover:bg-slate-50 transition-colors flex items-center justify-center gap-1.5"
             >
               <RefreshCw className="w-3.5 h-3.5" />

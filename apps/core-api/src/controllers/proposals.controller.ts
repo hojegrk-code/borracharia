@@ -8,6 +8,7 @@ import {
   requestIdParamSchema,
 } from '../schemas/requests.schemas.js';
 import { proposalsService } from '../services/proposals.service.js';
+import { socketService } from '../services/socket.service.js';
 import { resolveCustomerId } from './requests.controller.js';
 
 export async function resolveProviderId(req: FastifyRequest): Promise<string> {
@@ -48,6 +49,9 @@ export class ProposalsController {
 
     const proposal = await proposalsService.createProposal(params.id, providerId, body);
 
+    // Emite evento WebSocket na sala do chamado para notificar o cliente
+    socketService.emitNewProposal(params.id, proposal);
+
     return reply.status(201).send({
       success: true,
       message: 'Lance submetido com sucesso',
@@ -84,6 +88,9 @@ export class ProposalsController {
       customerId,
       body,
     );
+
+    // Notifica participantes da sala que a proposta foi aceita e o socorrista está a caminho
+    socketService.emitProposalAccepted(params.id, result);
 
     return reply.status(200).send({
       success: true,
