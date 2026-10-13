@@ -5,6 +5,7 @@
   "type": "module",
   "main": "dist/server.js",
   "scripts": {
+    "prebuild": "pnpm --filter @borracharia/database build",
     "build": "tsc",
     "check-types": "tsc --noEmit",
     "lint": "eslint src/",

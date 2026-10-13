@@ -16,11 +16,13 @@
     "db:studio": "prisma studio"
   },
   "dependencies": {
-    "@prisma/client": "^6.4.1"
+    "@prisma/client": "^6.4.1",
+    "pg": "^8.23.1"
   },
   "devDependencies": {
     "@borracharia/typescript-config": "workspace:*",
     "@types/node": "^22.13.9",
+    "@types/pg": "^8.23.1",
     "dotenv": "^16.4.7",
     "prisma": "^6.4.1",
     "typescript": "^5.8.2"

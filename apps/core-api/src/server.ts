@@ -9,7 +9,7 @@ async function bootstrap() {
 
   try {
     await app.listen({ port: PORT, host: HOST });
-    console.log(`🚀 BorracharIA Core API rodando com sucesso em http://localhost:${PORT}`);
+    console.log(`🚀 BorracharIA Core API rodando com sucesso em http://${HOST}:${PORT}`);
   } catch (err) {
     console.error('Erro ao inicializar o servidor HTTP:', err);
     process.exit(1);
