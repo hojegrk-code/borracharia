@@ -2,9 +2,10 @@ import { prisma } from '@borracharia/database';
 import { FastifyInstance } from 'fastify';
 import { proposalsController } from '../controllers/proposals.controller.js';
 import { requestsController } from '../controllers/requests.controller.js';
+import { authenticate } from '../middlewares/auth.middleware.js';
 
 export async function requestsRoutes(app: FastifyInstance) {
-  // Catálogo de Serviços
+  // Catálogo de Serviços (Consulta pública de tabela base de preços)
   app.get('/service-types', async (_req, reply) => {
     const types = await prisma.serviceType.findMany({
       where: { is_active: true },
@@ -16,15 +17,19 @@ export async function requestsRoutes(app: FastifyInstance) {
     });
   });
 
-  // Chamados
-  app.post('/requests', requestsController.create);
-  app.get('/requests/nearby', requestsController.getNearby);
-  app.get('/requests/:id', requestsController.getById);
+  // Chamados (Protegidos por Supabase JWT)
+  app.post('/requests', { preHandler: [authenticate] }, requestsController.create);
+  app.get('/requests/nearby', { preHandler: [authenticate] }, requestsController.getNearby);
+  app.get('/requests/:id', { preHandler: [authenticate] }, requestsController.getById);
 
-  // Lances (Proposals)
-  app.post('/requests/:id/proposals', proposalsController.create);
-  app.get('/requests/:id/proposals', proposalsController.list);
+  // Lances (Proposals) (Protegidos por Supabase JWT)
+  app.post('/requests/:id/proposals', { preHandler: [authenticate] }, proposalsController.create);
+  app.get('/requests/:id/proposals', { preHandler: [authenticate] }, proposalsController.list);
 
-  // Aceite de Lance e Integração Asaas
-  app.post('/requests/:id/proposals/:proposalId/accept', proposalsController.accept);
+  // Aceite de Lance e Integração Asaas (Protegido por Supabase JWT)
+  app.post(
+    '/requests/:id/proposals/:proposalId/accept',
+    { preHandler: [authenticate] },
+    proposalsController.accept,
+  );
 }

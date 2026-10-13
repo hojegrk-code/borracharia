@@ -1,3 +1,5 @@
+import { getProviderAuthToken } from './supabase';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export interface NearbyRequest {
@@ -24,17 +26,34 @@ export class ProviderApiClient {
     this.baseUrl = baseUrl.replace(/\/$/, '');
   }
 
+  private async getHeaders(
+    customHeaders?: Record<string, string>,
+  ): Promise<Record<string, string>> {
+    const token = await getProviderAuthToken();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...customHeaders,
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    return headers;
+  }
+
   async getNearbyRequests(
     latitude: number,
     longitude: number,
     radiusKm = 15,
   ): Promise<NearbyRequest[]> {
     try {
+      const headers = await this.getHeaders();
       const response = await fetch(
         `${this.baseUrl}/requests/nearby?latitude=${latitude}&longitude=${longitude}&radius_km=${radiusKm}`,
         {
           method: 'GET',
-          headers: { 'Content-Type': 'application/json' },
+          headers,
           cache: 'no-store',
         },
       );
@@ -52,9 +71,7 @@ export class ProviderApiClient {
   }
 
   async submitProposal(requestId: string, payload: SubmitProposalPayload, providerId?: string) {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
+    const headers = await this.getHeaders();
 
     if (providerId) {
       headers['x-provider-id'] = providerId;
@@ -72,6 +89,17 @@ export class ProviderApiClient {
     }
 
     return json.data;
+  }
+
+  async syncUserWithBackend(role = 'PROVIDER', phone?: string) {
+    const headers = await this.getHeaders();
+    const response = await fetch(`${this.baseUrl}/auth/sync`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ role, phone }),
+    });
+
+    return response.json();
   }
 }
 

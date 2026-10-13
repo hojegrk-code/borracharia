@@ -1,6 +1,7 @@
 import 'dotenv/config';
 import { prisma, ProviderStatus, Role } from '@borracharia/database';
 import { buildApp } from './app.js';
+import { authService } from './services/auth.service.js';
 
 const PORT = 3001;
 const BASE_URL = `http://localhost:${PORT}`;
@@ -73,6 +74,22 @@ async function runE2ETests() {
     const pro1Id = provider1User.provider_profile!.id;
     const pro2Id = provider2User.provider_profile!.id;
 
+    const customerToken = authService.generateTestToken({
+      id: customerUser.id,
+      email: customerUser.email,
+      role: 'CUSTOMER',
+    });
+    const pro1Token = authService.generateTestToken({
+      id: provider1User.id,
+      email: provider1User.email,
+      role: 'PROVIDER',
+    });
+    const pro2Token = authService.generateTestToken({
+      id: provider2User.id,
+      email: provider2User.email,
+      role: 'PROVIDER',
+    });
+
     console.log('✔ Usuários e perfis base configurados no banco:');
     console.log(`   Cliente:   ${customerUser.email} (ID: ${customerId})`);
     console.log(`   Prestador 1: ${provider1User.email} (ID: ${pro1Id})`);
@@ -91,6 +108,7 @@ async function runE2ETests() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${customerToken}`,
         'x-customer-id': customerId,
       },
       body: JSON.stringify({
@@ -114,6 +132,11 @@ async function runE2ETests() {
     // Coordenadas próximas: MASP / Av. Paulista (-23.5614, -46.6558)
     const nearbyRes = await fetch(
       `${BASE_URL}/requests/nearby?latitude=-23.5614&longitude=-46.6558&radius_km=10`,
+      {
+        headers: {
+          Authorization: `Bearer ${pro1Token}`,
+        },
+      },
     );
     const nearbyData = (await nearbyRes.json()) as any;
     console.log(`Status: ${nearbyRes.status}`);
@@ -126,6 +149,7 @@ async function runE2ETests() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${pro1Token}`,
         'x-provider-id': pro1Id,
       },
       body: JSON.stringify({
@@ -150,6 +174,7 @@ async function runE2ETests() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${pro2Token}`,
         'x-provider-id': pro2Id,
       },
       body: JSON.stringify({
@@ -169,7 +194,11 @@ async function runE2ETests() {
 
     // TESTE 6: GET /requests/:id/proposals (Cliente lista propostas)
     console.log('\n--- TESTE 6: GET /requests/:id/proposals (Cliente lista lances) ---');
-    const listPropRes = await fetch(`${BASE_URL}/requests/${requestId}/proposals`);
+    const listPropRes = await fetch(`${BASE_URL}/requests/${requestId}/proposals`, {
+      headers: {
+        Authorization: `Bearer ${customerToken}`,
+      },
+    });
     const listPropData = (await listPropRes.json()) as any;
     console.log(`Status: ${listPropRes.status}`);
     console.log(`Total de propostas recebidas: ${listPropData.total}`);
@@ -189,6 +218,7 @@ async function runE2ETests() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${customerToken}`,
           'x-customer-id': customerId,
         },
         body: JSON.stringify({
@@ -231,6 +261,7 @@ async function runE2ETests() {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
+        Authorization: `Bearer ${pro1Token}`,
         'x-provider-id': pro1Id,
       },
       body: JSON.stringify({

@@ -1,6 +1,7 @@
 import cors from '@fastify/cors';
 import Fastify from 'fastify';
 import { globalErrorHandler } from './errors/app-error.js';
+import { authRoutes } from './routes/auth.routes.js';
 import { healthRoutes } from './routes/health.routes.js';
 import { requestsRoutes } from './routes/requests.routes.js';
 
@@ -30,6 +31,7 @@ export function buildApp() {
 
   // Registro de rotas
   app.register(healthRoutes);
+  app.register(authRoutes);
   app.register(requestsRoutes);
 
   return app;

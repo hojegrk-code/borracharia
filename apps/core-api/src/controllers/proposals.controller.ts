@@ -1,41 +1,57 @@
 import { prisma } from '@borracharia/database';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { BadRequestError, NotFoundError } from '../errors/app-error.js';
+import { UnauthorizedError } from '../errors/app-error.js';
 import {
   acceptProposalSchema,
   createProposalSchema,
   requestAndProposalIdParamSchema,
   requestIdParamSchema,
 } from '../schemas/requests.schemas.js';
+import { authService } from '../services/auth.service.js';
 import { proposalsService } from '../services/proposals.service.js';
 import { socketService } from '../services/socket.service.js';
 import { resolveCustomerId } from './requests.controller.js';
 
 export async function resolveProviderId(req: FastifyRequest): Promise<string> {
+  // 1. Extrai ID do prestador autenticado via Supabase JWT
+  if (req.user) {
+    const userId = req.user.id;
+    let profile = await prisma.providerProfile.findUnique({
+      where: { user_id: userId },
+    });
+
+    if (!profile) {
+      await authService.syncUserAndProfile({
+        id: userId,
+        email: req.user.email,
+        role: 'PROVIDER',
+      });
+      profile = await prisma.providerProfile.findUnique({
+        where: { user_id: userId },
+      });
+    }
+
+    if (profile) return profile.id;
+  }
+
+  // 2. Fallbacks retrocompatíveis para headers de desenvolvimento
   const providerIdHeader = (req.headers['x-provider-id'] as string) || undefined;
   const userIdHeader = (req.headers['x-user-id'] as string) || undefined;
 
   if (providerIdHeader) return providerIdHeader;
-  if (!userIdHeader) {
-    throw new BadRequestError(
-      'Identificação do prestador ausente (envie o header x-user-id ou x-provider-id)',
-    );
+  if (userIdHeader) {
+    const profile = await prisma.providerProfile.findFirst({
+      where: {
+        OR: [{ id: userIdHeader }, { user_id: userIdHeader }],
+      },
+    });
+
+    if (profile) return profile.id;
   }
 
-  // Tenta encontrar perfil por profileId ou por userId
-  const profile = await prisma.providerProfile.findFirst({
-    where: {
-      OR: [{ id: userIdHeader }, { user_id: userIdHeader }],
-    },
-  });
-
-  if (!profile) {
-    throw new NotFoundError(
-      `Perfil de prestador não encontrado para o identificador [${userIdHeader}]`,
-    );
-  }
-
-  return profile.id;
+  throw new UnauthorizedError(
+    'Identificação do prestador não encontrada. Faça login para continuar.',
+  );
 }
 
 export class ProposalsController {

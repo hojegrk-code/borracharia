@@ -1,11 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   BellRing,
   CheckCircle,
   Clock,
   Compass,
+  LogOut,
   MapPin,
   Radio,
   RefreshCw,
@@ -14,12 +16,49 @@ import {
   Zap,
 } from 'lucide-react';
 import { getProviderSocket, onNewServiceRequest } from '../lib/socket';
+import { signOutProvider, supabase } from '../lib/supabase';
 
 export default function ProviderHomePage() {
+  const router = useRouter();
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isAuthChecking, setIsAuthChecking] = useState<boolean>(true);
   const [isOnline, setIsOnline] = useState(true);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [socketConnected, setSocketConnected] = useState(false);
   const [realtimeRequests, setRealtimeRequests] = useState<any[]>([]);
+
+  // Proteção de rota do prestador: se não autenticado no Supabase, redireciona para /login
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!data.session) {
+          router.replace('/login');
+          return;
+        }
+        setCurrentUser(data.session.user);
+      } catch (err) {
+        console.error('Erro ao verificar sessão do prestador:', err);
+        router.replace('/login');
+      } finally {
+        setIsAuthChecking(false);
+      }
+    }
+
+    checkAuth();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        router.replace('/login');
+      } else {
+        setCurrentUser(session.user);
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [router]);
 
   // Conexão WebSocket e listener para novos chamados
   useEffect(() => {
@@ -48,8 +87,20 @@ export default function ProviderHomePage() {
     setTimeout(() => setIsRefreshing(false), 600);
   }
 
+  if (isAuthChecking) {
+    return (
+      <main className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-900 text-slate-100 min-h-screen">
+        <div className="w-12 h-12 rounded-2xl bg-orange-600 flex items-center justify-center text-white shadow-lg animate-pulse mb-3">
+          <Wrench className="w-6 h-6 animate-spin" />
+        </div>
+        <p className="text-sm font-bold text-white">Verificando credenciais PRO...</p>
+        <p className="text-xs text-slate-400 mt-1">Conectando ao Supabase Auth</p>
+      </main>
+    );
+  }
+
   return (
-    <main className="flex-1 flex flex-col justify-between p-4 sm:p-6 bg-slate-900 text-slate-100">
+    <main className="flex-1 flex flex-col justify-between p-4 sm:p-6 bg-slate-900 text-slate-100 min-h-screen">
       {/* Top Header */}
       <header className="flex items-center justify-between pb-4 border-b border-slate-800">
         <div className="flex items-center space-x-2">
@@ -63,11 +114,13 @@ export default function ProviderHomePage() {
                 PRO
               </span>
             </h1>
-            <p className="text-xs text-slate-400">Socorrista Parceiro</p>
+            <p className="text-xs text-slate-400">
+              {currentUser?.email ? currentUser.email.split('@')[0] : 'Socorrista Parceiro'}
+            </p>
           </div>
         </div>
 
-        {/* Toggle Online/Offline */}
+        {/* Status e Logout */}
         <div className="flex items-center gap-2">
           {socketConnected && (
             <span className="hidden sm:inline-flex items-center gap-1 text-[10px] text-emerald-400 font-bold bg-emerald-950/60 px-2 py-1 rounded-full border border-emerald-800/40">
@@ -89,6 +142,17 @@ export default function ProviderHomePage() {
               }`}
             />
             <span>{isOnline ? 'ONLINE' : 'OFFLINE'}</span>
+          </button>
+
+          <button
+            onClick={async () => {
+              await signOutProvider();
+              router.replace('/login');
+            }}
+            title="Sair do painel"
+            className="p-1.5 rounded-xl border border-slate-700 bg-slate-800 text-slate-400 hover:text-rose-400 hover:border-rose-800 transition-all shadow-sm"
+          >
+            <LogOut className="w-4 h-4" />
           </button>
         </div>
       </header>

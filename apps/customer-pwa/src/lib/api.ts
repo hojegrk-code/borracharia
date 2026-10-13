@@ -1,3 +1,5 @@
+import { getAuthToken } from './supabase';
+
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3001';
 
 export interface ServiceType {
@@ -36,6 +38,22 @@ export class ApiClient {
 
   constructor(baseUrl = API_BASE_URL) {
     this.baseUrl = baseUrl.replace(/\/$/, '');
+  }
+
+  private async getHeaders(
+    customHeaders?: Record<string, string>,
+  ): Promise<Record<string, string>> {
+    const token = await getAuthToken();
+    const headers: Record<string, string> = {
+      'Content-Type': 'application/json',
+      ...customHeaders,
+    };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    return headers;
   }
 
   async getServiceTypes(): Promise<ServiceType[]> {
@@ -79,9 +97,7 @@ export class ApiClient {
     payload: CreateRequestPayload,
     customerId?: string,
   ): Promise<ServiceRequestResponse> {
-    const headers: Record<string, string> = {
-      'Content-Type': 'application/json',
-    };
+    const headers = await this.getHeaders();
 
     if (customerId) {
       headers['x-customer-id'] = customerId;
@@ -100,6 +116,20 @@ export class ApiClient {
     }
 
     return json.data;
+  }
+
+  /**
+   * Sincroniza o usuário autenticado do Supabase com o banco PostgreSQL da BorracharIA
+   */
+  async syncUserWithBackend(role = 'CUSTOMER', phone?: string) {
+    const headers = await this.getHeaders();
+    const response = await fetch(`${this.baseUrl}/auth/sync`, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({ role, phone }),
+    });
+
+    return response.json();
   }
 }
 

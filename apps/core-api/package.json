@@ -11,19 +11,23 @@
     "lint": "eslint src/",
     "dev": "tsx watch src/server.ts",
     "start": "node dist/server.js",
-    "test:e2e": "tsx src/test-e2e.ts"
+    "test:e2e": "tsx src/test-e2e.ts",
+    "test:auth": "tsx src/test-auth-e2e.ts"
   },
   "dependencies": {
     "@borracharia/database": "workspace:*",
     "@fastify/cors": "^10.0.2",
+    "@supabase/supabase-js": "^2.117.3",
     "dotenv": "^16.4.7",
     "fastify": "^5.2.1",
+    "jsonwebtoken": "^9.0.3",
     "socket.io": "^4.8.4",
     "zod": "^3.24.2"
   },
   "devDependencies": {
     "@borracharia/eslint-config": "workspace:*",
     "@borracharia/typescript-config": "workspace:*",
+    "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^22.13.9",
     "socket.io-client": "^4.8.4",
     "tsx": "^4.19.3",

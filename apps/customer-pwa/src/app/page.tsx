@@ -1,12 +1,14 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import {
   AlertCircle,
   ArrowRight,
   CheckCircle2,
   Clock,
   Compass,
+  LogOut,
   MapPin,
   Radio,
   RefreshCw,
@@ -20,6 +22,7 @@ import {
   onNewProposal,
   onProposalAccepted,
 } from '../lib/socket';
+import { signOutUser, supabase } from '../lib/supabase';
 
 // Coordenadas mockadas: Centro de Balneário Camboriú, SC
 const MOCK_LOCATION = {
@@ -30,6 +33,9 @@ const MOCK_LOCATION = {
 };
 
 export default function CustomerHomePage() {
+  const router = useRouter();
+  const [currentUser, setCurrentUser] = useState<any>(null);
+  const [isAuthChecking, setIsAuthChecking] = useState<boolean>(true);
   const [serviceTypes, setServiceTypes] = useState<ServiceType[]>([]);
   const [selectedServiceId, setSelectedServiceId] = useState<string>('');
   const [isLoading, setIsLoading] = useState<boolean>(false);
@@ -37,6 +43,39 @@ export default function CustomerHomePage() {
   const [activeRequest, setActiveRequest] = useState<ServiceRequestResponse | null>(null);
   const [realtimeProposals, setRealtimeProposals] = useState<any[]>([]);
   const [socketConnected, setSocketConnected] = useState<boolean>(false);
+
+  // Proteção de Rota: se não autenticado no Supabase, redireciona para /login
+  useEffect(() => {
+    async function checkAuth() {
+      try {
+        const { data } = await supabase.auth.getSession();
+        if (!data.session) {
+          router.replace('/login');
+          return;
+        }
+        setCurrentUser(data.session.user);
+      } catch (err) {
+        console.error('Erro ao verificar sessão:', err);
+        router.replace('/login');
+      } finally {
+        setIsAuthChecking(false);
+      }
+    }
+
+    checkAuth();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!session) {
+        router.replace('/login');
+      } else {
+        setCurrentUser(session.user);
+      }
+    });
+
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, [router]);
 
   // Monitora conexão com o servidor WebSocket
   useEffect(() => {
@@ -119,8 +158,20 @@ export default function CustomerHomePage() {
     }
   }
 
+  if (isAuthChecking) {
+    return (
+      <main className="flex-1 flex flex-col items-center justify-center p-6 bg-slate-50 min-h-screen">
+        <div className="w-12 h-12 rounded-2xl bg-orange-600 flex items-center justify-center text-white shadow-lg animate-pulse mb-3">
+          <Wrench className="w-6 h-6 animate-spin" />
+        </div>
+        <p className="text-sm font-bold text-slate-800">Verificando sessão segura...</p>
+        <p className="text-xs text-slate-400 mt-1">Conectando ao Supabase Auth</p>
+      </main>
+    );
+  }
+
   return (
-    <main className="flex-1 flex flex-col justify-between p-4 sm:p-6 bg-slate-50">
+    <main className="flex-1 flex flex-col justify-between p-4 sm:p-6 bg-slate-50 min-h-screen">
       {/* Top Header */}
       <header className="flex items-center justify-between pb-4 border-b border-slate-200">
         <div className="flex items-center space-x-2">
@@ -131,22 +182,38 @@ export default function CustomerHomePage() {
             <h1 className="font-extrabold text-lg text-slate-900 tracking-tight">
               Borrachar<span className="text-orange-600">IA</span>
             </h1>
-            <p className="text-xs text-slate-500 font-medium">Socorro 24h para Pneus</p>
+            <p className="text-xs text-slate-500 font-medium">
+              {currentUser?.email ? currentUser.email.split('@')[0] : 'Socorro 24h'}
+            </p>
           </div>
         </div>
-        <div
-          className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-full border text-xs font-semibold ${
-            socketConnected
-              ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-              : 'bg-amber-50 border-amber-200 text-amber-700'
-          }`}
-        >
-          <span
-            className={`w-2 h-2 rounded-full ${
-              socketConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
+
+        <div className="flex items-center space-x-2">
+          <div
+            className={`flex items-center space-x-1.5 px-2.5 py-1 rounded-full border text-xs font-semibold ${
+              socketConnected
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+                : 'bg-amber-50 border-amber-200 text-amber-700'
             }`}
-          ></span>
-          <span>{socketConnected ? '⚡ Tempo Real Ativo' : 'Conectando...'}</span>
+          >
+            <span
+              className={`w-2 h-2 rounded-full ${
+                socketConnected ? 'bg-emerald-500 animate-pulse' : 'bg-amber-500'
+              }`}
+            ></span>
+            <span>{socketConnected ? '⚡ Tempo Real' : 'Conectando'}</span>
+          </div>
+
+          <button
+            onClick={async () => {
+              await signOutUser();
+              router.replace('/login');
+            }}
+            title="Sair da conta"
+            className="p-1.5 rounded-xl border border-slate-200 bg-white text-slate-500 hover:text-rose-600 hover:border-rose-200 hover:bg-rose-50 transition-all shadow-sm"
+          >
+            <LogOut className="w-4 h-4" />
+          </button>
         </div>
       </header>
 

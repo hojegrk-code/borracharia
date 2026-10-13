@@ -39,6 +39,18 @@ export class PaymentRequiredError extends AppError {
   }
 }
 
+export class UnauthorizedError extends AppError {
+  constructor(message = 'Acesso não autorizado', details?: unknown) {
+    super(message, 401, 'UNAUTHORIZED', details);
+  }
+}
+
+export class ForbiddenError extends AppError {
+  constructor(message = 'Acesso negado para este perfil', details?: unknown) {
+    super(message, 403, 'FORBIDDEN', details);
+  }
+}
+
 export function globalErrorHandler(error: any, request: FastifyRequest, reply: FastifyReply) {
   request.log.error(error);
 
@@ -56,6 +68,7 @@ export function globalErrorHandler(error: any, request: FastifyRequest, reply: F
     return reply.status(error.statusCode).send({
       success: false,
       error: error.message,
+      message: error.message,
       code: error.code,
       statusCode: error.statusCode,
       details: error.details,
