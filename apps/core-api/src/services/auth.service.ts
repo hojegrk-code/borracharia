@@ -102,7 +102,11 @@ export class AuthService {
   }) {
     const { id, email, role, phone } = params;
     const effectivePhone =
-      phone || `+5500${id.replace(/[^0-9]/g, '').slice(0, 9).padEnd(9, '0')}`;
+      phone ||
+      `+5500${id
+        .replace(/[^0-9]/g, '')
+        .slice(0, 9)
+        .padEnd(9, '0')}`;
 
     // 1. Cria ou atualiza o registro na tabela User
     const user = await prisma.user.upsert({

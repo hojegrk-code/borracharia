@@ -1,5 +1,6 @@
+import { prisma } from '@borracharia/database';
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { UnauthorizedError } from '../errors/app-error.js';
+import { ForbiddenError, UnauthorizedError } from '../errors/app-error.js';
 import { AuthenticatedUser, authService } from '../services/auth.service.js';
 
 declare module 'fastify' {
@@ -32,4 +33,36 @@ export async function authenticate(request: FastifyRequest, _reply: FastifyReply
   }
 
   request.user = user;
+}
+
+/**
+ * Middleware para garantir que o usuário autenticado possui perfil de Administrador (ADMIN).
+ * Rejeita com HTTP 403 Forbidden se o usuário não for ADMIN.
+ */
+export async function requireAdmin(request: FastifyRequest, reply: FastifyReply): Promise<void> {
+  if (!request.user) {
+    await authenticate(request, reply);
+  }
+
+  if (!request.user) {
+    throw new UnauthorizedError('Autenticação necessária');
+  }
+
+  let role = request.user.role;
+  if (role !== 'ADMIN') {
+    const dbUser = await prisma.user.findUnique({
+      where: { id: request.user.id },
+      select: { role: true },
+    });
+    if (dbUser?.role === 'ADMIN') {
+      role = 'ADMIN';
+      request.user.role = 'ADMIN';
+    }
+  }
+
+  if (role !== 'ADMIN') {
+    throw new ForbiddenError(
+      'Acesso restrito. Esta rota exige privilégios de Administrador (ADMIN)',
+    );
+  }
 }

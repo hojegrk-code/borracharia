@@ -107,7 +107,7 @@ async function runAuthE2ETests() {
       },
       body: JSON.stringify({
         role: 'CUSTOMER',
-        phone: '+5511999990001',
+        phone: `+55119${Math.floor(10000000 + Math.random() * 90000000)}`,
       }),
     });
     const syncCustomerData = (await syncCustomerRes.json()) as any;
@@ -125,7 +125,7 @@ async function runAuthE2ETests() {
       },
       body: JSON.stringify({
         role: 'PROVIDER',
-        phone: '+5511999990002',
+        phone: `+55119${Math.floor(10000000 + Math.random() * 90000000)}`,
       }),
     });
     const syncProviderData = (await syncProviderRes.json()) as any;

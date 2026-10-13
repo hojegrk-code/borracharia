@@ -4,18 +4,31 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "tsc",
-    "check-types": "tsc --noEmit",
+    "dev": "next dev -p 3003",
+    "build": "next build",
+    "start": "next start -p 3003",
     "lint": "eslint src/",
-    "dev": "node dist/index.js"
+    "check-types": "tsc --noEmit"
   },
   "dependencies": {
-    "@borracharia/database": "workspace:*"
+    "@borracharia/database": "workspace:*",
+    "@supabase/supabase-js": "^2.117.3",
+    "clsx": "^2.1.1",
+    "lucide-react": "^0.475.0",
+    "next": "^15.2.0",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "tailwind-merge": "^3.0.2"
   },
   "devDependencies": {
     "@borracharia/eslint-config": "workspace:*",
     "@borracharia/typescript-config": "workspace:*",
     "@types/node": "^22.13.9",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.5.3",
+    "tailwindcss": "^3.4.17",
     "typescript": "^5.8.2"
   }
 }
