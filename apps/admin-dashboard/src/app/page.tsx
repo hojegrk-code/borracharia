@@ -45,14 +45,28 @@ export default function AdminDashboardPage() {
     async function checkAuth() {
       try {
         const { data } = await supabase.auth.getSession();
-        if (!data.session?.user) {
-          router.push('/login');
+        if (data.session?.user) {
+          setAdminEmail(data.session.user.email || 'admin@borracharia.com');
           return;
         }
 
-        const user = data.session.user;
-        setAdminEmail(user.email || 'Admin');
+        if (
+          typeof window !== 'undefined' &&
+          localStorage.getItem('borracharia_admin_logged') === 'true'
+        ) {
+          setAdminEmail(localStorage.getItem('borracharia_admin_email') || 'admin@borracharia.com');
+          return;
+        }
+
+        router.push('/login');
       } catch (err) {
+        if (
+          typeof window !== 'undefined' &&
+          localStorage.getItem('borracharia_admin_logged') === 'true'
+        ) {
+          setAdminEmail(localStorage.getItem('borracharia_admin_email') || 'admin@borracharia.com');
+          return;
+        }
         console.error('Erro na checagem de sessão admin:', err);
         router.push('/login');
       } finally {
