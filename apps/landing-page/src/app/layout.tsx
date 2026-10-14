@@ -2,21 +2,21 @@ import type { Metadata, Viewport } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Seja um Parceiro BorracharIA | Renda Extra com Socorro de Pneus em SC',
+  title: 'BorracharIA Super App | Socorro de Pneus Inteligente em SC',
   description:
-    'Aumente o faturamento da sua borracharia atendendo chamados emergenciais em Itajaí, Balneário Camboriú e região. Você define o seu preço e recebe direto no app.',
+    'A plataforma de socorro de pneus que conecta motoristas a borracheiros e socorristas em minutos em Itajaí, Balneário Camboriú e eixo BR-101.',
   keywords: [
-    'borracheiro itajaí',
+    'borracharia itajaí',
     'socorro de pneu balneário camboriú',
     'borracharia 24 horas sc',
-    'renda extra mecânico',
     'troca de pneu br 101',
+    'socorrista automotivo sc',
     'aplicativo para borracheiros',
   ],
   openGraph: {
-    title: 'Ganhe Mais com a BorracharIA - Seja um Socorrista Parceiro',
+    title: 'BorracharIA Super App - Socorro de Pneus Inteligente',
     description:
-      'Sem mensalidade. Sem patrão. Defina o seu preço dinâmico e receba clientes direto no seu celular.',
+      'Chame socorro de pneus em minutos ou aumente o faturamento da sua oficina com preço dinâmico e pagamento garantido.',
     type: 'website',
     locale: 'pt_BR',
   },
@@ -26,13 +26,13 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
-  themeColor: '#ea580c',
+  themeColor: '#FF6600',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body className="bg-zinc-950 text-white min-h-screen antialiased selection:bg-orange-600 selection:text-white">
+      <body className="bg-zinc-950 text-white min-h-screen antialiased selection:bg-[#FF6600] selection:text-white">
         {children}
       </body>
     </html>

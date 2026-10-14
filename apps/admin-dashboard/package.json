@@ -4,9 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "dev": "next dev -p 3003",
-    "build": "next build",
-    "start": "next start -p 3003",
+    "dev": "echo 'Disabled: Migrated to unified Super App (apps/landing-page/src/app/(admin)/admin)'",
+    "build": "echo 'Disabled: Migrated to unified Super App (apps/landing-page/src/app/(admin)/admin)'",
+    "start": "echo 'Disabled: Migrated to unified Super App (apps/landing-page)'",
     "lint": "eslint src/",
     "check-types": "tsc --noEmit"
   },

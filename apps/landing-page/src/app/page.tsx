@@ -20,15 +20,12 @@ import {
   Radar,
   Lock,
   Sparkles,
+  Car,
+  Compass,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Card, CardHeader, CardTitle, CardDescription } from '../components/ui/card';
-import { Badge } from '../components/ui/badge';
 
-export default function PartnerLandingPage() {
-  const providerRegisterUrl =
-    process.env.NEXT_PUBLIC_PROVIDER_URL || 'http://localhost:3002/register';
-
+export default function SuperAppLandingPage() {
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
 
   const toggleFaq = (index: number) => {
@@ -36,107 +33,156 @@ export default function PartnerLandingPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#FFFDF9] text-zinc-900 selection:bg-[#FF6600] selection:text-white flex flex-col font-sans relative overflow-x-hidden">
-      {/* Top Header */}
-      <header className="border-b border-orange-100/80 bg-white/90 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-8 py-3.5 shadow-sm">
-        <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#FF6600] flex items-center justify-center text-white shadow-md shadow-orange-600/20">
+    <div className="min-h-screen bg-zinc-950 text-white selection:bg-[#FF6600] selection:text-white flex flex-col font-sans relative overflow-x-hidden">
+      {/* Top Header com Glassmorphism e Navegação Integrada */}
+      <header className="border-b border-zinc-800/90 bg-zinc-950/80 backdrop-blur-xl sticky top-0 z-50 px-4 sm:px-8 py-3.5 shadow-2xl shadow-black/80">
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          {/* Logo */}
+          <Link href="/" className="flex items-center gap-2.5 group">
+            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-[#FF6600] to-amber-500 flex items-center justify-center text-white shadow-lg shadow-orange-600/30 group-hover:scale-105 transition">
               <Wrench className="w-5 h-5 text-white" />
             </div>
             <div className="flex items-baseline gap-1.5">
-              <span className="font-black text-xl tracking-tight text-zinc-950">BorracharIA</span>
-              <span className="text-xs font-bold text-[#FF6600] uppercase tracking-widest">
-                Parceiros
+              <span className="font-black text-xl tracking-tight text-white">BorracharIA</span>
+              <span className="text-[10px] font-black uppercase tracking-widest bg-orange-500/20 text-[#FF6600] px-2 py-0.5 rounded-full border border-orange-500/30">
+                SC
               </span>
             </div>
-          </div>
-
-          <Link href={providerRegisterUrl}>
-            <Button size="sm" variant="default" className="gap-1.5">
-              <span>Cadastrar</span>
-              <ChevronRight className="w-3.5 h-3.5" />
-            </Button>
           </Link>
+
+          {/* Links Centrais de Acesso Rápido */}
+          <nav className="hidden md:flex items-center gap-6 text-xs font-bold text-zinc-300">
+            <Link
+              href="/app"
+              className="hover:text-[#FF6600] transition flex items-center gap-1.5 py-1 px-2.5 rounded-xl hover:bg-zinc-900"
+            >
+              <Car className="w-3.5 h-3.5 text-blue-400" />
+              <span>Pedir Socorro (Motorista)</span>
+            </Link>
+            <Link
+              href="/pro"
+              className="hover:text-[#FF6600] transition flex items-center gap-1.5 py-1 px-2.5 rounded-xl hover:bg-zinc-900"
+            >
+              <Wrench className="w-3.5 h-3.5 text-orange-400" />
+              <span>Área do Borracheiro</span>
+            </Link>
+            <Link
+              href="/admin"
+              className="text-zinc-500 hover:text-zinc-300 transition flex items-center gap-1.5 py-1 px-2 rounded-xl"
+            >
+              <span>Painel Gestão</span>
+            </Link>
+          </nav>
+
+          {/* Botões de Ação */}
+          <div className="flex items-center gap-2.5">
+            <Link href="/app">
+              <Button size="sm" variant="outline" className="gap-1.5 text-xs">
+                <Car className="w-3.5 h-3.5 text-orange-400" />
+                <span className="hidden sm:inline">Chamar Socorro</span>
+              </Button>
+            </Link>
+
+            <Link href="/pro/register">
+              <Button size="sm" variant="default" className="gap-1 text-xs">
+                <span>Cadastrar Oficina</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </Button>
+            </Link>
+          </div>
         </div>
       </header>
 
-      {/* Hero Section (Fundo com gradiente suave creme/branco) */}
-      <section className="relative pt-10 pb-16 px-4 sm:px-6 lg:px-8 overflow-hidden bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#FFFFFF]">
-        {/* Soft Radial Ambient Light */}
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-5xl h-96 bg-gradient-to-b from-orange-200/30 via-orange-100/15 to-transparent blur-3xl pointer-events-none" />
+      {/* Hero Section Cinematográfica com Imagem de Fundo Escurecida */}
+      <section className="relative pt-16 pb-24 px-4 sm:px-6 lg:px-8 overflow-hidden min-h-[85vh] flex flex-col justify-center">
+        {/* Background Hero Image com Overlay Escuro */}
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-40 filter scale-105"
+          style={{
+            backgroundImage:
+              "url('https://images.unsplash.com/photo-1617788138017-80ad40651399?q=80&w=2070&auto=format&fit=crop')",
+          }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-zinc-950/90 via-zinc-950/80 to-zinc-950" />
 
-        <div className="max-w-3xl mx-auto text-center relative z-10 space-y-6">
-          {/* Badge de Localização Regional */}
+        {/* Ambient Radial Lights */}
+        <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-full max-w-5xl h-96 bg-gradient-to-b from-[#FF6600]/25 via-amber-600/10 to-transparent blur-3xl pointer-events-none" />
+
+        <div className="max-w-4xl mx-auto text-center relative z-10 space-y-7">
+          {/* Badge de Localização Regional com Pulso */}
           <div className="inline-flex">
-            <Badge variant="orange" className="gap-2 py-1.5 px-3.5 text-xs animate-pulse-subtle">
+            <div className="backdrop-blur-md bg-zinc-900/80 border border-orange-500/40 rounded-full py-1.5 px-4 text-xs font-bold text-orange-300 flex items-center gap-2 shadow-xl shadow-orange-600/20 animate-pulse-subtle">
               <MapPin className="w-3.5 h-3.5 text-[#FF6600] shrink-0" />
-              <span>Vagas para Borracheiros: Itajaí, Balneário Camboriú & Eixo BR-101</span>
-            </Badge>
+              <span>Itajaí, Balneário Camboriú & Eixo Rodoviário BR-101</span>
+            </div>
           </div>
 
-          {/* Headline com Tipografia Bold e Destaques em Laranja */}
-          <h1 className="text-3xl sm:text-5xl lg:text-6xl font-black tracking-tight text-zinc-950 leading-[1.15]">
-            Aumente o faturamento da sua borracharia atendendo{' '}
-            <span className="text-[#FF6600]">emergências em Itajaí e BC</span>
+          {/* Headline Monumental com Alto Contraste Laranja (#FF6600) e Branco */}
+          <h1 className="text-3xl sm:text-5xl lg:text-7xl font-black tracking-tight text-white leading-[1.1]">
+            Socorro de pneus inteligente para{' '}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF6600] via-amber-400 to-[#FF6600]">
+              motoristas e oficinas
+            </span>{' '}
+            em Santa Catarina.
           </h1>
 
           {/* Subheadline Persuasiva */}
-          <p className="text-base sm:text-lg text-zinc-700 max-w-2xl mx-auto font-normal leading-relaxed">
-            Seja acionado quando motoristas precisarem de socorro de pneus perto de você.{' '}
-            <strong className="text-zinc-950 font-semibold">
-              Preço dinâmico, pagamento 100% garantido
-            </strong>{' '}
-            e autonomia total para impulsionar a receita da sua oficina.
+          <p className="text-base sm:text-xl text-zinc-300 max-w-2xl mx-auto font-normal leading-relaxed drop-shadow-sm">
+            Acione o socorrista mais próximo em minutos ou aumente a receita da sua oficina
+            atendendo chamados com{' '}
+            <strong className="text-white font-semibold">
+              preço dinâmico e pagamento 100% garantido
+            </strong>
+            .
           </p>
 
-          {/* Destaque das 3 Vantagens Centrais em Pílulas */}
-          <div className="flex flex-wrap justify-center items-center gap-3 sm:gap-4 text-xs font-semibold text-zinc-700 pt-1">
-            <span className="flex items-center gap-1.5 bg-white px-3.5 py-1.5 rounded-xl border border-zinc-200/80 shadow-sm">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> Preço Dinâmico (Você
-              decide o valor)
-            </span>
-            <span className="flex items-center gap-1.5 bg-white px-3.5 py-1.5 rounded-xl border border-zinc-200/80 shadow-sm">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> Pagamento Garantido
-            </span>
-            <span className="flex items-center gap-1.5 bg-white px-3.5 py-1.5 rounded-xl border border-zinc-200/80 shadow-sm">
-              <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0" /> Autonomia Total
-            </span>
+          {/* Duplo CTA Gigante: Motoristas e Borracheiros */}
+          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5 max-w-xl mx-auto">
+            {/* CTA Motorista */}
+            <Link href="/app" className="w-full sm:w-1/2">
+              <button className="w-full bg-white hover:bg-zinc-100 text-zinc-950 font-black py-4 px-6 rounded-2xl text-base transition shadow-2xl flex items-center justify-center gap-2.5 cursor-pointer group">
+                <Compass className="w-5 h-5 text-[#FF6600] group-hover:rotate-45 transition-transform" />
+                <span>Pedir Socorro Agora</span>
+              </button>
+            </Link>
+
+            {/* CTA Borracheiro */}
+            <Link href="/pro/register" className="w-full sm:w-1/2">
+              <button className="w-full bg-gradient-to-r from-[#FF6600] to-[#E65100] hover:from-[#E65100] hover:to-[#CC4400] text-white font-black py-4 px-6 rounded-2xl text-base transition shadow-2xl shadow-orange-600/40 border border-orange-400/30 flex items-center justify-center gap-2.5 cursor-pointer">
+                <span>Quero ser Parceiro</span>
+                <ArrowRight className="w-5 h-5 animate-pulse" />
+              </button>
+            </Link>
           </div>
 
-          {/* CTA Gigante Principal */}
-          <div className="pt-4 pb-2">
-            <Link href={providerRegisterUrl} className="inline-block w-full sm:w-auto">
-              <Button
-                size="xl"
-                variant="cta"
-                className="w-full sm:w-auto gap-3 text-base sm:text-lg shadow-xl shadow-orange-600/30"
-              >
-                <span>Quero ser um Parceiro BorracharIA</span>
-                <ArrowRight className="w-5 h-5 text-white animate-pulse" />
-              </Button>
-            </Link>
-            <p className="text-xs text-zinc-500 mt-2.5">
-              Validação ágil de documentos • Comece a atender assim que aprovado
-            </p>
+          <div className="flex flex-wrap items-center justify-center gap-4 text-xs text-zinc-400 pt-1">
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Sem taxas fixas mensais
+            </span>
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Retenção segura no cartão
+            </span>
+            <span className="flex items-center gap-1.5">
+              <CheckCircle2 className="w-4 h-4 text-emerald-400" /> Geolocalização em tempo real
+            </span>
           </div>
         </div>
 
-        {/* Card Grande Laranja com Projeção de Ganhos para os Parceiros */}
-        <div className="max-w-2xl mx-auto mt-10">
-          <div className="rounded-3xl bg-gradient-to-br from-[#FF6600] via-[#FF771A] to-[#E65100] text-white p-6 sm:p-8 shadow-2xl shadow-orange-600/30 border border-orange-400/30 relative overflow-hidden">
+        {/* Card Grande Laranja com Projeção de Ganhos para Parceiros */}
+        <div className="max-w-3xl mx-auto mt-14 w-full">
+          <div className="rounded-3xl bg-gradient-to-br from-[#FF6600] via-[#FF771A] to-[#E65100] text-white p-6 sm:p-8 shadow-2xl shadow-orange-600/30 border border-orange-400/40 relative overflow-hidden">
             {/* Background geometric accents */}
             <div className="absolute -top-12 -right-12 w-48 h-48 bg-white/10 rounded-full blur-2xl pointer-events-none" />
-            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-black/10 rounded-full blur-xl pointer-events-none" />
+            <div className="absolute -bottom-10 -left-10 w-40 h-40 bg-black/15 rounded-full blur-xl pointer-events-none" />
 
             <div className="relative z-10 space-y-6">
               <div className="flex items-center justify-between border-b border-white/20 pb-4">
                 <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-white/20 flex items-center justify-center">
+                  <div className="w-8 h-8 rounded-xl bg-white/20 flex items-center justify-center">
                     <TrendingUp className="w-5 h-5 text-white" />
                   </div>
                   <span className="text-xs sm:text-sm font-black uppercase tracking-wider text-orange-100">
-                    Projeção Real de Ganhos Extras
+                    Projeção de Faturamento para Oficinas
                   </span>
                 </div>
                 <span className="bg-white/20 backdrop-blur-md px-3 py-1 rounded-full text-[11px] font-black uppercase tracking-wider text-white border border-white/20">
@@ -148,13 +194,13 @@ export default function PartnerLandingPage() {
                 <span className="text-xs sm:text-sm text-orange-100 font-medium block">
                   Com apenas 2 a 4 atendimentos rápidos por dia:
                 </span>
-                <div className="text-3xl sm:text-5xl font-black tracking-tight text-white drop-shadow-sm">
+                <div className="text-3xl sm:text-6xl font-black tracking-tight text-white drop-shadow-md">
                   +R$ 5.400 a R$ 10.800
-                  <span className="text-base sm:text-xl font-bold text-orange-200">/mês</span>
+                  <span className="text-base sm:text-2xl font-bold text-orange-200">/mês</span>
                 </div>
                 <p className="text-xs sm:text-sm text-orange-100/90 pt-1">
-                  Média de <strong>R$ 90 a R$ 250</strong> por socorro emergencial (você define o
-                  lance!).
+                  Média de <strong>R$ 90 a R$ 250</strong> por socorro emergencial (você decide o
+                  valor do lance!).
                 </p>
               </div>
 
@@ -181,15 +227,15 @@ export default function PartnerLandingPage() {
                     Sem Mensalidade
                   </span>
                   <span className="text-lg font-black text-white block mt-0.5">R$ 0,00 fixo</span>
-                  <span className="text-[10px] text-orange-200">Taxa só ao concluir</span>
+                  <span className="text-[10px] text-orange-200">Taxa só na conclusão</span>
                 </div>
               </div>
 
               <div className="pt-2 text-center">
-                <Link href={providerRegisterUrl} className="inline-block w-full sm:w-auto">
-                  <button className="w-full sm:w-auto bg-white text-[#FF6600] hover:bg-orange-50 font-black px-6 py-3 rounded-xl text-sm transition shadow-lg shadow-black/10 flex items-center justify-center gap-2 mx-auto cursor-pointer">
+                <Link href="/pro/register" className="inline-block w-full sm:w-auto">
+                  <button className="w-full sm:w-auto bg-white text-[#FF6600] hover:bg-orange-50 font-black px-7 py-3.5 rounded-2xl text-sm transition shadow-xl shadow-black/20 flex items-center justify-center gap-2 mx-auto cursor-pointer">
                     <Sparkles className="w-4 h-4 text-[#FF6600]" />
-                    <span>Cadastrar e Começar a Receber Chamados</span>
+                    <span>Cadastrar Minha Oficina e Receber Chamados</span>
                   </button>
                 </Link>
               </div>
@@ -198,71 +244,139 @@ export default function PartnerLandingPage() {
         </div>
       </section>
 
-      {/* Seção de Vantagens Diretas (Fundo Claro/Creme) */}
-      <section className="py-14 px-4 sm:px-6 lg:px-8 bg-[#FAF6F0] border-t border-orange-100/70">
-        <div className="max-w-5xl mx-auto space-y-8">
+      {/* Galeria de Fotos Reais de Alta Resolução (Padrão Startup Premium) */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-zinc-950 border-t border-zinc-900">
+        <div className="max-w-6xl mx-auto space-y-10">
           <div className="text-center space-y-2">
             <h2 className="text-xs font-bold text-[#FF6600] uppercase tracking-widest">
-              Vantagens Diretas do Marketplace
+              Excelência Operacional em Campo
             </h2>
-            <p className="text-2xl sm:text-4xl font-extrabold text-zinc-950 tracking-tight">
-              Construído para valorizar o seu trabalho
+            <p className="text-2xl sm:text-4xl font-black text-white tracking-tight">
+              Socorro profissional, seguro e imediato
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Imagem 1: Profissional Uniformizado / Ferramentas */}
+            <div className="group relative rounded-3xl overflow-hidden border border-zinc-800 bg-zinc-900/60 shadow-2xl h-80 flex flex-col justify-end">
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                style={{
+                  backgroundImage:
+                    "url('https://images.unsplash.com/photo-1619642751034-765dfdf7c58e?q=80&w=1000&auto=format&fit=crop')",
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+              <div className="relative z-10 p-6 backdrop-blur-sm bg-zinc-950/40 border-t border-white/10 space-y-1">
+                <span className="text-[10px] font-black uppercase tracking-wider text-orange-400 block">
+                  Segurança Garantida
+                </span>
+                <h3 className="font-extrabold text-lg text-white">Profissionais Verificados</h3>
+                <p className="text-xs text-zinc-300">
+                  Validação de CNH, equipamentos adequados e histórico de atendimento.
+                </p>
+              </div>
+            </div>
+
+            {/* Imagem 2: Pneu Moderno / Roda Esportiva */}
+            <div className="group relative rounded-3xl overflow-hidden border border-zinc-800 bg-zinc-900/60 shadow-2xl h-80 flex flex-col justify-end">
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                style={{
+                  backgroundImage:
+                    "url('https://images.unsplash.com/photo-1578844251758-2f71da64c96f?q=80&w=1000&auto=format&fit=crop')",
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+              <div className="relative z-10 p-6 backdrop-blur-sm bg-zinc-950/40 border-t border-white/10 space-y-1">
+                <span className="text-[10px] font-black uppercase tracking-wider text-orange-400 block">
+                  Qualquer Veículo
+                </span>
+                <h3 className="font-extrabold text-lg text-white">Carros, SUVs & Utilitários</h3>
+                <p className="text-xs text-zinc-300">
+                  Troca por estepe, calibragem ou vulcanização de furos na hora.
+                </p>
+              </div>
+            </div>
+
+            {/* Imagem 3: Atendimento na Rodovia BR-101 */}
+            <div className="group relative rounded-3xl overflow-hidden border border-zinc-800 bg-zinc-900/60 shadow-2xl h-80 flex flex-col justify-end">
+              <div
+                className="absolute inset-0 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                style={{
+                  backgroundImage:
+                    "url('https://images.unsplash.com/photo-1486006920555-c77dce18193b?q=80&w=1000&auto=format&fit=crop')",
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-zinc-950 via-zinc-950/40 to-transparent" />
+              <div className="relative z-10 p-6 backdrop-blur-sm bg-zinc-950/40 border-t border-white/10 space-y-1">
+                <span className="text-[10px] font-black uppercase tracking-wider text-orange-400 block">
+                  Agilidade e Precisão
+                </span>
+                <h3 className="font-extrabold text-lg text-white">Plantões na Rodovia</h3>
+                <p className="text-xs text-zinc-300">
+                  Chegada ágil em trechos urbanos e rodoviários com rastreamento GPS.
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Seção de Vantagens Diretas com Glassmorphism */}
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-zinc-900/40 border-t border-zinc-800/80">
+        <div className="max-w-5xl mx-auto space-y-10">
+          <div className="text-center space-y-2">
+            <h2 className="text-xs font-bold text-[#FF6600] uppercase tracking-widest">
+              Por que a BorracharIA é Diferente?
+            </h2>
+            <p className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
+              Transparência total para ambas as partes
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {/* Vantagem 1: Preço Dinâmico */}
-            <Card className="hover:border-orange-300 transition shadow-sm bg-white">
-              <CardHeader className="space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-orange-100 text-[#FF6600] flex items-center justify-center font-bold">
-                  <DollarSign className="w-6 h-6" />
-                </div>
-                <CardTitle>Preço Dinâmico (Você decide o valor do socorro)</CardTitle>
-                <CardDescription>
-                  Sem tabela fixa engessada. Ao visualizar o chamado e a localização do veículo,
-                  você envia a sua própria proposta com o valor que considerar justo pelo seu
-                  serviço e deslocamento.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            {/* Vantagem 1 */}
+            <div className="backdrop-blur-xl bg-zinc-900/80 border border-zinc-800 rounded-3xl p-6 shadow-xl space-y-3 hover:border-orange-500/40 transition">
+              <div className="w-12 h-12 rounded-2xl bg-orange-600/15 border border-orange-500/30 text-[#FF6600] flex items-center justify-center font-bold">
+                <DollarSign className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-white">Preço Dinâmico</h3>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Sem tabelas engessadas. Os borracheiros enviam suas próprias propostas baseadas na
+                distância real e o motorista escolhe a mais conveniente.
+              </p>
+            </div>
 
-            {/* Vantagem 2: Pagamento Garantido */}
-            <Card className="hover:border-emerald-300 transition shadow-sm bg-white">
-              <CardHeader className="space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center font-bold">
-                  <ShieldCheck className="w-6 h-6" />
-                </div>
-                <CardTitle>
-                  Pagamento Garantido (O cliente paga no app, o dinheiro vai direto pra você)
-                </CardTitle>
-                <CardDescription>
-                  O motorista tem o valor retido no cartão antes de você iniciar o deslocamento.
-                  Assim que o conserto ou troca é concluído, o saldo é liberado diretamente na sua
-                  conta via gateway seguro.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            {/* Vantagem 2 */}
+            <div className="backdrop-blur-xl bg-zinc-900/80 border border-zinc-800 rounded-3xl p-6 shadow-xl space-y-3 hover:border-emerald-500/40 transition">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-600/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center font-bold">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-white">Pagamento Garantido</h3>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Retenção no cartão estilo Uber antes do deslocamento. O profissional tem 100% de
+                certeza de recebimento e o cliente paga só pelo conserto feito.
+              </p>
+            </div>
 
-            {/* Vantagem 3: Autonomia Total */}
-            <Card className="hover:border-amber-300 transition shadow-sm bg-white">
-              <CardHeader className="space-y-3">
-                <div className="w-12 h-12 rounded-xl bg-amber-100 text-amber-600 flex items-center justify-center font-bold">
-                  <Clock className="w-6 h-6" />
-                </div>
-                <CardTitle>Autonomia Total (Ligue o app apenas quando quiser trabalhar)</CardTitle>
-                <CardDescription>
-                  Você é dono do seu tempo. Abra o aplicativo apenas quando a oficina estiver
-                  tranquila, nos finais de semana ou em plantões noturnos. Atenda somente onde e
-                  quando quiser.
-                </CardDescription>
-              </CardHeader>
-            </Card>
+            {/* Vantagem 3 */}
+            <div className="backdrop-blur-xl bg-zinc-900/80 border border-zinc-800 rounded-3xl p-6 shadow-xl space-y-3 hover:border-amber-500/40 transition">
+              <div className="w-12 h-12 rounded-2xl bg-amber-600/15 border border-amber-500/30 text-amber-400 flex items-center justify-center font-bold">
+                <Clock className="w-6 h-6" />
+              </div>
+              <h3 className="text-lg font-bold text-white">Autonomia Total</h3>
+              <p className="text-xs text-zinc-400 leading-relaxed">
+                Ligue o aplicativo apenas nos horários em que desejar atender. Faça das emergências
+                uma fonte de renda potente para sua oficina.
+              </p>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Seção Escura para IA / Tecnologia */}
-      <section className="py-16 sm:py-20 px-4 sm:px-6 lg:px-8 bg-zinc-950 text-white border-y border-zinc-800 relative overflow-hidden">
+      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-zinc-950 text-white border-y border-zinc-800 relative overflow-hidden">
         {/* Tech Radial Accents */}
         <div className="absolute top-0 right-1/4 w-96 h-96 bg-orange-600/10 rounded-full blur-3xl pointer-events-none" />
         <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
@@ -287,8 +401,8 @@ export default function PartnerLandingPage() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
             {/* Tech Card 1 */}
-            <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-6 hover:border-orange-500/40 transition space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-orange-600/20 text-[#FF6600] flex items-center justify-center">
+            <div className="backdrop-blur-xl bg-zinc-900/90 border border-zinc-800 rounded-3xl p-6 hover:border-orange-500/40 transition space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-orange-600/20 text-[#FF6600] flex items-center justify-center">
                 <Radar className="w-6 h-6 text-orange-500" />
               </div>
               <h3 className="text-lg font-bold text-white">
@@ -302,8 +416,8 @@ export default function PartnerLandingPage() {
             </div>
 
             {/* Tech Card 2 */}
-            <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-6 hover:border-orange-500/40 transition space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-amber-600/20 text-amber-400 flex items-center justify-center">
+            <div className="backdrop-blur-xl bg-zinc-900/90 border border-zinc-800 rounded-3xl p-6 hover:border-orange-500/40 transition space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-amber-600/20 text-amber-400 flex items-center justify-center">
                 <Zap className="w-6 h-6 text-amber-400" />
               </div>
               <h3 className="text-lg font-bold text-white">Radar de Chamados em Tempo Real</h3>
@@ -315,8 +429,8 @@ export default function PartnerLandingPage() {
             </div>
 
             {/* Tech Card 3 */}
-            <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-6 hover:border-orange-500/40 transition space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center">
+            <div className="backdrop-blur-xl bg-zinc-900/90 border border-zinc-800 rounded-3xl p-6 hover:border-orange-500/40 transition space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-600/20 text-emerald-400 flex items-center justify-center">
                 <Lock className="w-6 h-6 text-emerald-400" />
               </div>
               <h3 className="text-lg font-bold text-white">
@@ -329,8 +443,8 @@ export default function PartnerLandingPage() {
             </div>
 
             {/* Tech Card 4 */}
-            <div className="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-6 hover:border-orange-500/40 transition space-y-3">
-              <div className="w-12 h-12 rounded-xl bg-purple-600/20 text-purple-400 flex items-center justify-center">
+            <div className="backdrop-blur-xl bg-zinc-900/90 border border-zinc-800 rounded-3xl p-6 hover:border-orange-500/40 transition space-y-3">
+              <div className="w-12 h-12 rounded-2xl bg-purple-600/20 text-purple-400 flex items-center justify-center">
                 <Sparkles className="w-6 h-6 text-purple-400" />
               </div>
               <h3 className="text-lg font-bold text-white">Sugestão Inteligente de Precificação</h3>
@@ -345,122 +459,130 @@ export default function PartnerLandingPage() {
       </section>
 
       {/* Seção: Como Funciona o Aplicativo */}
-      <section className="py-14 px-4 sm:px-6 lg:px-8 bg-white">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-zinc-950">
         <div className="max-w-5xl mx-auto space-y-10">
           <div className="text-center space-y-2">
             <h2 className="text-xs font-bold text-[#FF6600] uppercase tracking-widest">
               Fluxo Operacional Simples
             </h2>
-            <p className="text-2xl sm:text-4xl font-extrabold text-zinc-950 tracking-tight">
+            <p className="text-2xl sm:text-4xl font-extrabold text-white tracking-tight">
               Como funciona o atendimento de chamados?
             </p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
             {/* Passo 1 */}
-            <Card className="p-5 relative border-zinc-200/90 shadow-sm bg-[#FFFDF9]">
-              <span className="text-3xl font-black text-orange-200 absolute top-4 right-4">01</span>
-              <div className="w-10 h-10 rounded-xl bg-orange-100 text-[#FF6600] flex items-center justify-center font-bold mb-4">
+            <div className="p-6 relative rounded-3xl border border-zinc-800 bg-zinc-900/70 shadow-lg space-y-2">
+              <span className="text-3xl font-black text-orange-500/25 absolute top-4 right-4">
+                01
+              </span>
+              <div className="w-10 h-10 rounded-xl bg-orange-600/20 text-[#FF6600] flex items-center justify-center font-bold mb-4">
                 <Zap className="w-5 h-5" />
               </div>
-              <h4 className="text-base font-bold text-zinc-900 mb-2">Chamado Próximo</h4>
-              <p className="text-xs text-zinc-600 leading-relaxed">
+              <h4 className="text-base font-bold text-white">Chamado Próximo</h4>
+              <p className="text-xs text-zinc-400 leading-relaxed">
                 Um motorista com emergência de pneu na sua região solicita socorro. Seu aplicativo
                 notifica com localização precisa no mapa.
               </p>
-            </Card>
+            </div>
 
             {/* Passo 2 */}
-            <Card className="p-5 relative border-zinc-200/90 shadow-sm bg-[#FFFDF9]">
-              <span className="text-3xl font-black text-orange-200 absolute top-4 right-4">02</span>
-              <div className="w-10 h-10 rounded-xl bg-orange-100 text-[#FF6600] flex items-center justify-center font-bold mb-4">
+            <div className="p-6 relative rounded-3xl border border-zinc-800 bg-zinc-900/70 shadow-lg space-y-2">
+              <span className="text-3xl font-black text-orange-500/25 absolute top-4 right-4">
+                02
+              </span>
+              <div className="w-10 h-10 rounded-xl bg-orange-600/20 text-[#FF6600] flex items-center justify-center font-bold mb-4">
                 <DollarSign className="w-5 h-5" />
               </div>
-              <h4 className="text-base font-bold text-zinc-900 mb-2">Envio do Seu Lance</h4>
-              <p className="text-xs text-zinc-600 leading-relaxed">
+              <h4 className="text-base font-bold text-white">Envio do Seu Lance</h4>
+              <p className="text-xs text-zinc-400 leading-relaxed">
                 Você define seu valor e o tempo estimado de chegada. Em segundos seu lance chega na
                 tela do cliente.
               </p>
-            </Card>
+            </div>
 
             {/* Passo 3 */}
-            <Card className="p-5 relative border-zinc-200/90 shadow-sm bg-[#FFFDF9]">
-              <span className="text-3xl font-black text-orange-200 absolute top-4 right-4">03</span>
-              <div className="w-10 h-10 rounded-xl bg-orange-100 text-[#FF6600] flex items-center justify-center font-bold mb-4">
+            <div className="p-6 relative rounded-3xl border border-zinc-800 bg-zinc-900/70 shadow-lg space-y-2">
+              <span className="text-3xl font-black text-orange-500/25 absolute top-4 right-4">
+                03
+              </span>
+              <div className="w-10 h-10 rounded-xl bg-orange-600/20 text-[#FF6600] flex items-center justify-center font-bold mb-4">
                 <ShieldCheck className="w-5 h-5" />
               </div>
-              <h4 className="text-base font-bold text-zinc-900 mb-2">Retenção Financeira</h4>
-              <p className="text-xs text-zinc-600 leading-relaxed">
+              <h4 className="text-base font-bold text-white">Retenção Financeira</h4>
+              <p className="text-xs text-zinc-400 leading-relaxed">
                 O cliente escolhe o seu lance e o valor é pré-autorizado no cartão pelo app. Você se
                 desloca com segurança de recebimento.
               </p>
-            </Card>
+            </div>
 
             {/* Passo 4 */}
-            <Card className="p-5 relative border-zinc-200/90 shadow-sm bg-[#FFFDF9]">
-              <span className="text-3xl font-black text-orange-200 absolute top-4 right-4">04</span>
-              <div className="w-10 h-10 rounded-xl bg-orange-100 text-[#FF6600] flex items-center justify-center font-bold mb-4">
+            <div className="p-6 relative rounded-3xl border border-zinc-800 bg-zinc-900/70 shadow-lg space-y-2">
+              <span className="text-3xl font-black text-orange-500/25 absolute top-4 right-4">
+                04
+              </span>
+              <div className="w-10 h-10 rounded-xl bg-orange-600/20 text-[#FF6600] flex items-center justify-center font-bold mb-4">
                 <CheckCircle2 className="w-5 h-5" />
               </div>
-              <h4 className="text-base font-bold text-zinc-900 mb-2">Conclusão e Saldo</h4>
-              <p className="text-xs text-zinc-600 leading-relaxed">
+              <h4 className="text-base font-bold text-white">Conclusão e Saldo</h4>
+              <p className="text-xs text-zinc-400 leading-relaxed">
                 Finalize a troca ou conserto e confirme no aplicativo. O pagamento cai direto na sua
                 conta cadastrada.
               </p>
-            </Card>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Prova Social em Santa Catarina */}
-      <section className="py-14 px-4 sm:px-6 lg:px-8 bg-[#FAF6F0] border-t border-orange-100/70">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-zinc-900/40 border-t border-zinc-800">
         <div className="max-w-4xl mx-auto space-y-6">
           <div className="text-center space-y-1">
-            <div className="flex items-center justify-center gap-1 text-amber-500 mb-2">
+            <div className="flex items-center justify-center gap-1 text-amber-400 mb-2">
               {[...Array(5)].map((_, i) => (
-                <Star key={i} className="w-4 h-4 fill-amber-500" />
+                <Star key={i} className="w-4 h-4 fill-amber-400" />
               ))}
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-zinc-950">
+            <h3 className="text-xl sm:text-2xl font-bold text-white">
               Depoimentos de quem já atende em SC
             </h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <Card className="p-6 space-y-3 bg-white border-zinc-200/80 shadow-sm">
-              <p className="text-xs sm:text-sm text-zinc-700 italic leading-relaxed">
+            <div className="p-6 rounded-3xl bg-zinc-900 border border-zinc-800 space-y-3">
+              <p className="text-xs sm:text-sm text-zinc-300 italic leading-relaxed">
                 &ldquo;Trabalho próximo à BR-101 em Itajaí. Com o BorracharIA, recebo chamados de
                 emergência direto no celular. O dinheiro cai certinho e eu decido o preço que vale o
                 meu deslocamento.&rdquo;
               </p>
-              <div className="flex items-center justify-between text-xs text-zinc-500 pt-3 border-t border-zinc-100">
-                <span className="font-bold text-zinc-900">Claudio M. (Borracheiro)</span>
+              <div className="flex items-center justify-between text-xs text-zinc-400 pt-3 border-t border-zinc-800">
+                <span className="font-bold text-white">Claudio M. (Borracheiro)</span>
                 <span>Itajaí - SC</span>
               </div>
-            </Card>
+            </div>
 
-            <Card className="p-6 space-y-3 bg-white border-zinc-200/80 shadow-sm">
-              <p className="text-xs sm:text-sm text-zinc-700 italic leading-relaxed">
+            <div className="p-6 rounded-3xl bg-zinc-900 border border-zinc-800 space-y-3">
+              <p className="text-xs sm:text-sm text-zinc-300 italic leading-relaxed">
                 &ldquo;A segurança do pagamento é o grande diferencial. O cliente já autoriza o
                 cartão pelo aplicativo antes de eu sair da borracharia. Zero risco de calote.&rdquo;
               </p>
-              <div className="flex items-center justify-between text-xs text-zinc-500 pt-3 border-t border-zinc-100">
-                <span className="font-bold text-zinc-900">Ricardo S. (Socorrista Móvel)</span>
+              <div className="flex items-center justify-between text-xs text-zinc-400 pt-3 border-t border-zinc-800">
+                <span className="font-bold text-white">Ricardo S. (Socorrista Móvel)</span>
                 <span>Balneário Camboriú - SC</span>
               </div>
-            </Card>
+            </div>
           </div>
         </div>
       </section>
 
       {/* FAQ Operacional e Transparente */}
-      <section className="py-14 px-4 sm:px-6 lg:px-8 bg-white border-t border-zinc-200/60">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-zinc-950 border-t border-zinc-800/80">
         <div className="max-w-3xl mx-auto space-y-6">
           <div className="text-center space-y-1">
             <h2 className="text-xs font-bold text-[#FF6600] uppercase tracking-widest">
               Dúvidas Frequentes
             </h2>
-            <p className="text-2xl font-extrabold text-zinc-950">Esclarecimentos Rápidos</p>
+            <p className="text-2xl font-extrabold text-white">Esclarecimentos Rápidos</p>
           </div>
 
           <div className="space-y-3">
@@ -484,11 +606,11 @@ export default function PartnerLandingPage() {
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="bg-[#FFFDF9] border border-zinc-200 rounded-xl overflow-hidden transition"
+                className="bg-zinc-900 border border-zinc-800 rounded-2xl overflow-hidden transition"
               >
                 <button
                   onClick={() => toggleFaq(idx)}
-                  className="w-full p-4 text-left flex items-center justify-between gap-4 font-semibold text-sm text-zinc-900 hover:text-[#FF6600] transition cursor-pointer"
+                  className="w-full p-4 text-left flex items-center justify-between gap-4 font-semibold text-sm text-white hover:text-[#FF6600] transition cursor-pointer"
                 >
                   <span className="flex items-center gap-2">
                     <HelpCircle className="w-4 h-4 text-[#FF6600] shrink-0" />
@@ -501,7 +623,7 @@ export default function PartnerLandingPage() {
                   />
                 </button>
                 {faqOpen === idx && (
-                  <div className="px-4 pb-4 text-xs text-zinc-600 leading-relaxed border-t border-zinc-100 pt-3">
+                  <div className="px-4 pb-4 text-xs text-zinc-300 leading-relaxed border-t border-zinc-800/60 pt-3">
                     {item.a}
                   </div>
                 )}
@@ -512,60 +634,81 @@ export default function PartnerLandingPage() {
       </section>
 
       {/* Seção Final de Conversão */}
-      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-[#FFFDF9] via-[#FAF6F0] to-[#FFFDF9] border-t border-orange-100 text-center">
+      <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-zinc-950 via-zinc-900/60 to-zinc-950 border-t border-zinc-800/80 text-center">
         <div className="max-w-2xl mx-auto space-y-6">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-orange-100 text-[#FF6600] shadow-md shadow-orange-600/10">
+          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-orange-600/20 text-[#FF6600] shadow-xl shadow-orange-600/10">
             <ShieldAlert className="w-8 h-8" />
           </div>
 
-          <h2 className="text-2xl sm:text-4xl font-black text-zinc-950 tracking-tight">
+          <h2 className="text-2xl sm:text-4xl font-black text-white tracking-tight">
             Não perca chamados na sua região. Cadastre-se agora mesmo!
           </h2>
 
-          <p className="text-sm text-zinc-600 max-w-lg mx-auto">
+          <p className="text-sm text-zinc-400 max-w-lg mx-auto">
             O fluxo de veículos em Itajaí, Balneário Camboriú e na BR-101 é constante todos os dias.
             Esteja pronto para faturar com chamados de emergência.
           </p>
 
-          <div>
-            <Link href={providerRegisterUrl} className="inline-block w-full sm:w-auto">
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
+            <Link href="/app" className="w-full sm:w-auto">
+              <Button
+                size="xl"
+                variant="outline"
+                className="w-full sm:w-auto gap-2 text-sm sm:text-base"
+              >
+                <Car className="w-4 h-4 text-orange-400" />
+                <span>Pedir Socorro Agora</span>
+              </Button>
+            </Link>
+
+            <Link href="/pro/register" className="w-full sm:w-auto">
               <Button
                 size="xl"
                 variant="cta"
-                className="w-full sm:w-auto gap-3 text-base sm:text-lg"
+                className="w-full sm:w-auto gap-3 text-sm sm:text-base"
               >
-                <span>Quero ser um Parceiro BorracharIA</span>
+                <span>Quero ser um Parceiro</span>
                 <ArrowRight className="w-5 h-5 text-white" />
               </Button>
             </Link>
-            <p className="text-xs text-zinc-500 mt-3">
-              Leva menos de 3 minutos para enviar seus dados e iniciar a análise.
-            </p>
           </div>
         </div>
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-zinc-200 bg-white py-8 px-4 text-center text-xs text-zinc-500 space-y-2 mb-16 sm:mb-0">
-        <p className="font-semibold text-zinc-600">
-          BorracharIA Marketplace de Serviços Automotivos © 2026. Todos os direitos reservados.
+      <footer className="border-t border-zinc-900 bg-zinc-950 py-8 px-4 text-center text-xs text-zinc-500 space-y-2 mb-16 sm:mb-0">
+        <p className="font-semibold text-zinc-400">
+          BorracharIA Super App © 2026. Todos os direitos reservados.
         </p>
         <p>Operando em Itajaí, Balneário Camboriú e região litoral norte de Santa Catarina.</p>
+        <div className="flex justify-center gap-4 text-[11px] text-zinc-500 pt-2">
+          <Link href="/app" className="hover:underline">
+            App Motorista
+          </Link>
+          <span>•</span>
+          <Link href="/pro" className="hover:underline">
+            App Borracheiro
+          </Link>
+          <span>•</span>
+          <Link href="/admin" className="hover:underline">
+            Painel Gestão
+          </Link>
+        </div>
       </footer>
 
-      {/* Sticky Bottom Bar (Mobile Conversion CTA) */}
-      <div className="fixed bottom-0 inset-x-0 bg-white/95 backdrop-blur-md border-t border-orange-100 p-3 z-50 sm:hidden flex items-center justify-between gap-3 shadow-xl">
-        <div className="flex flex-col">
-          <span className="text-[11px] font-bold text-[#FF6600] uppercase tracking-wider">
-            Vagas Abertas em SC
-          </span>
-          <span className="text-xs font-semibold text-zinc-900">Parceria BorracharIA</span>
-        </div>
-        <Link href={providerRegisterUrl}>
-          <Button size="sm" variant="default" className="gap-1.5 shrink-0">
-            <span>Quero ser Parceiro</span>
+      {/* Sticky Bottom Bar (Mobile Quick Action) */}
+      <div className="fixed bottom-0 inset-x-0 bg-zinc-950/95 backdrop-blur-xl border-t border-zinc-800 p-3 z-50 sm:hidden flex items-center justify-between gap-3 shadow-2xl">
+        <Link href="/app" className="flex-1">
+          <button className="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 border border-zinc-700">
+            <Car className="w-3.5 h-3.5 text-orange-400" />
+            <span>Motorista</span>
+          </button>
+        </Link>
+        <Link href="/pro/register" className="flex-1">
+          <button className="w-full bg-gradient-to-r from-[#FF6600] to-[#E65100] text-white font-black py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-orange-600/30">
+            <span>Borracheiro</span>
             <ArrowRight className="w-3.5 h-3.5" />
-          </Button>
+          </button>
         </Link>
       </div>
     </div>

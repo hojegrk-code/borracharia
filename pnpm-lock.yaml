@@ -352,6 +352,12 @@ importers:
 
   apps/landing-page:
     dependencies:
+      '@borracharia/database':
+        specifier: workspace:*
+        version: link:../../packages/database
+      '@supabase/supabase-js':
+        specifier: ^2.117.3
+        version: 2.117.3
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -367,6 +373,9 @@ importers:
       react-dom:
         specifier: ^19.0.0
         version: 19.3.0(react@19.3.0)
+      socket.io-client:
+        specifier: ^4.8.4
+        version: 4.8.4(supports-color@7.2.0)
       tailwind-merge:
         specifier: ^3.0.2
         version: 3.7.0
