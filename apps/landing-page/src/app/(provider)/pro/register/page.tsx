@@ -15,6 +15,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '../../../../lib/supabase';
 import { providerApi } from '../../../../lib/api';
+import { trackCompleteRegistration } from '../../../../lib/analytics';
 
 export default function ProviderRegisterPage() {
   const router = useRouter();
@@ -61,6 +62,7 @@ export default function ProviderRegisterPage() {
         } catch {
           // ignore
         }
+        trackCompleteRegistration('PROVIDER', { phone, cnh: cnhNumber });
         router.push('/pro');
         return;
       }
@@ -81,6 +83,8 @@ export default function ProviderRegisterPage() {
       if (error) {
         throw new Error(error.message);
       }
+
+      trackCompleteRegistration('PROVIDER', { phone, cnh: cnhNumber });
 
       if (data.session) {
         try {

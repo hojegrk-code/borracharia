@@ -24,6 +24,7 @@ import {
   Compass,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { trackLead, trackInitiateEmergency } from '../lib/analytics';
 
 export default function SuperAppLandingPage() {
   const [faqOpen, setFaqOpen] = useState<number | null>(null);
@@ -76,14 +77,14 @@ export default function SuperAppLandingPage() {
 
           {/* Botões de Ação */}
           <div className="flex items-center gap-2.5">
-            <Link href="/app">
+            <Link href="/app" onClick={() => trackInitiateEmergency('Header CTA')}>
               <Button size="sm" variant="outline" className="gap-1.5 text-xs">
                 <Car className="w-3.5 h-3.5 text-orange-400" />
                 <span className="hidden sm:inline">Chamar Socorro</span>
               </Button>
             </Link>
 
-            <Link href="/pro/register">
+            <Link href="/pro/register" onClick={() => trackLead('Header CTA')}>
               <Button size="sm" variant="default" className="gap-1 text-xs">
                 <span>Cadastrar Oficina</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -139,7 +140,11 @@ export default function SuperAppLandingPage() {
           {/* Duplo CTA Gigante: Motoristas e Borracheiros */}
           <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-3.5 max-w-xl mx-auto">
             {/* CTA Motorista */}
-            <Link href="/app" className="w-full sm:w-1/2">
+            <Link
+              href="/app"
+              onClick={() => trackInitiateEmergency('Hero Button')}
+              className="w-full sm:w-1/2"
+            >
               <button className="w-full bg-white hover:bg-zinc-100 text-zinc-950 font-black py-4 px-6 rounded-2xl text-base transition shadow-2xl flex items-center justify-center gap-2.5 cursor-pointer group">
                 <Compass className="w-5 h-5 text-[#FF6600] group-hover:rotate-45 transition-transform" />
                 <span>Pedir Socorro Agora</span>
@@ -147,7 +152,11 @@ export default function SuperAppLandingPage() {
             </Link>
 
             {/* CTA Borracheiro */}
-            <Link href="/pro/register" className="w-full sm:w-1/2">
+            <Link
+              href="/pro/register"
+              onClick={() => trackLead('Hero Partner Button')}
+              className="w-full sm:w-1/2"
+            >
               <button className="w-full bg-gradient-to-r from-[#FF6600] to-[#E65100] hover:from-[#E65100] hover:to-[#CC4400] text-white font-black py-4 px-6 rounded-2xl text-base transition shadow-2xl shadow-orange-600/40 border border-orange-400/30 flex items-center justify-center gap-2.5 cursor-pointer">
                 <span>Quero ser Parceiro</span>
                 <ArrowRight className="w-5 h-5 animate-pulse" />
@@ -232,7 +241,11 @@ export default function SuperAppLandingPage() {
               </div>
 
               <div className="pt-2 text-center">
-                <Link href="/pro/register" className="inline-block w-full sm:w-auto">
+                <Link
+                  href="/pro/register"
+                  onClick={() => trackLead('Revenue Projection CTA')}
+                  className="inline-block w-full sm:w-auto"
+                >
                   <button className="w-full sm:w-auto bg-white text-[#FF6600] hover:bg-orange-50 font-black px-7 py-3.5 rounded-2xl text-sm transition shadow-xl shadow-black/20 flex items-center justify-center gap-2 mx-auto cursor-pointer">
                     <Sparkles className="w-4 h-4 text-[#FF6600]" />
                     <span>Cadastrar Minha Oficina e Receber Chamados</span>
@@ -650,7 +663,11 @@ export default function SuperAppLandingPage() {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
-            <Link href="/app" className="w-full sm:w-auto">
+            <Link
+              href="/app"
+              onClick={() => trackInitiateEmergency('Bottom Section')}
+              className="w-full sm:w-auto"
+            >
               <Button
                 size="xl"
                 variant="outline"
@@ -661,7 +678,11 @@ export default function SuperAppLandingPage() {
               </Button>
             </Link>
 
-            <Link href="/pro/register" className="w-full sm:w-auto">
+            <Link
+              href="/pro/register"
+              onClick={() => trackLead('Bottom Conversion CTA')}
+              className="w-full sm:w-auto"
+            >
               <Button
                 size="xl"
                 variant="cta"
@@ -698,13 +719,21 @@ export default function SuperAppLandingPage() {
 
       {/* Sticky Bottom Bar (Mobile Quick Action) */}
       <div className="fixed bottom-0 inset-x-0 bg-zinc-950/95 backdrop-blur-xl border-t border-zinc-800 p-3 z-50 sm:hidden flex items-center justify-between gap-3 shadow-2xl">
-        <Link href="/app" className="flex-1">
+        <Link
+          href="/app"
+          onClick={() => trackInitiateEmergency('Mobile Bottom Bar')}
+          className="flex-1"
+        >
           <button className="w-full bg-zinc-800 hover:bg-zinc-700 text-white font-bold py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 border border-zinc-700">
             <Car className="w-3.5 h-3.5 text-orange-400" />
             <span>Motorista</span>
           </button>
         </Link>
-        <Link href="/pro/register" className="flex-1">
+        <Link
+          href="/pro/register"
+          onClick={() => trackLead('Mobile Bottom Bar')}
+          className="flex-1"
+        >
           <button className="w-full bg-gradient-to-r from-[#FF6600] to-[#E65100] text-white font-black py-2.5 px-3 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow-lg shadow-orange-600/30">
             <span>Borracheiro</span>
             <ArrowRight className="w-3.5 h-3.5" />

@@ -25,6 +25,7 @@ import {
   onProposalAccepted,
 } from '../../../lib/socket';
 import { signOutUser, supabase } from '../../../lib/supabase';
+import { trackInitiateEmergency } from '../../../lib/analytics';
 
 // Coordenadas padrão: Balneário Camboriú, SC
 const MOCK_LOCATION = {
@@ -157,6 +158,9 @@ export default function CustomerHomePage() {
         latitude: MOCK_LOCATION.latitude,
         longitude: MOCK_LOCATION.longitude,
       });
+
+      const selectedService = serviceTypes.find((s) => s.id === selectedServiceId);
+      trackInitiateEmergency(selectedService ? selectedService.name : 'Socorro de Emergência');
 
       setActiveRequest(result);
 
